@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stoned Leads</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Cormorant:wght@500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pulse: #FF6B6B;
+            --teal: #00FFE0;
+            --dark: #0a0a0a;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(45deg, #1a1a1a, #2d2d2d);
+            color: white;
+            margin: 0;
+            scroll-behavior: smooth;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            display: flex;
+            gap: 2rem;
+            padding: 1.5rem;
+            z-index: 100;
+        }
+
+        .nav-item {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 0 5px rgba(255,255,255,0.1));
+        }
+
+        .nav-item:hover {
+            filter: drop-shadow(0 0 10px var(--teal));
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(45deg, #121212, #2a2a2a);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero h1 {
+            font-family: 'Cormorant', serif;
+            font-size: 4rem;
+            margin: 0;
+            background: linear-gradient(45deg, var(--teal), var(--pulse));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .cta-button {
+            padding: 1rem 2.5rem;
+            margin-top: 2rem;
+            border: none;
+            border-radius: 50px;
+            background: var(--pulse);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Services Section */
+        .services {
+            padding: 5rem 2rem;
+        }
+
+        .prism-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .prism {
+            height: 300px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            transform-style: preserve-3d;
+            transition: all 0.5s ease;
+        }
+
+        .prism:hover {
+            transform: rotateY(180deg);
+            background: linear-gradient(45deg, var(--pulse), var(--teal));
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-item">Services</div>
+        <div class="nav-item">Process</div>
+        <div class="nav-item">ROI</div>
+        <div class="nav-item">Contact</div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Get Stoned on Effortless Growth</h1>
+        <p>We turn your brand into a magnet for attention</p>
+        <button class="cta-button">Start Your Effortless Journey →</button>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services">
+        <h2>We Don't Sell Services. We Sell Certainty</h2>
+        <div class="prism-grid">
+            <div class="prism"></div>
+            <div class="prism"></div>
+            <div class="prism"></div>
+            <div class="prism"></div>
+        </div>
+    </section>
+
+    <script>
+        // Add smooth scroll behavior
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                // Add transition logic here
+            });
+        });
+
+        // Add intersection observers for animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.prism').forEach((el) => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
