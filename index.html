@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stoned Leads - Clean Hero</title>
+    <title>Magnetic Growth Orb</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Cormorant:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --accent-purple: #9b59b6;
-            --accent-teal: #00FFE0;
+            --accent-magnet: #FF6B6B;
+            --field-teal: #00FFE0;
             --dark-bg: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
         }
 
@@ -35,7 +35,6 @@
             top: 0;
             left: 0;
             z-index: 1;
-            opacity: 0.7;
         }
 
         .hero-content {
@@ -50,49 +49,32 @@
             font-family: 'Cormorant', serif;
             font-size: 4rem;
             margin: 0 auto 2rem;
-            background: linear-gradient(45deg, #FF6B6B, #00FFE0);
+            background: linear-gradient(45deg, var(--accent-magnet), var(--field-teal));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
             line-height: 1.1;
-            padding: 1rem;
-            position: relative;
         }
 
         .subheadline {
             font-size: 1.5rem;
             max-width: 600px;
             margin: 0 auto 3rem;
-            padding: 1.5rem;
-            border-radius: 15px;
-        }
-
-        .highlight-phrase {
-            display: block;
-            font-weight: 700;
-            font-size: 1.8rem;
-            margin: 1rem 0;
-            color: #FF6B6B;
-            text-shadow: 0 0 15px rgba(255,107,107,0.5);
         }
 
         .cta-button {
             padding: 1.2rem 3rem;
             font-size: 1.2rem;
-            background: rgba(0, 255, 224, 0.15);
-            border: 2px solid #00FFE0;
+            background: rgba(255, 107, 107, 0.15);
+            border: 2px solid var(--accent-magnet);
             color: white;
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s ease;
-            position: relative;
-            backdrop-filter: blur(5px);
-            z-index: 3;
         }
 
         .cta-button:hover {
-            background: rgba(255, 107, 107, 0.2);
-            border-color: #FF6B6B;
+            background: rgba(255, 107, 107, 0.3);
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(255,107,107,0.3);
         }
@@ -102,22 +84,24 @@
     <section id="hero">
         <canvas id="scene"></canvas>
         <div class="hero-content">
-            <h1 class="headline">Get Stoned on Effortless Growth</h1>
+            <h1 class="headline">Magnetic Growth Orb</h1>
             <p class="subheadline">
-                We turn your brand into a magnet for attention<br>
-                <span class="highlight-phrase">No chasing. No Guessing. Just Results.</span>
+                Attracting leads, customers, and profits effortlessly<br>
+                <span style="color: #00FFE0">Watch the magnetic effect in action →</span>
             </p>
-            <button class="cta-button">Start Your Effortless Journey →</button>
+            <button class="cta-button">Activate Magnetic Growth</button>
         </div>
     </section>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
-        class JellyScene {
+        class MagneticScene {
             constructor() {
                 this.container = document.getElementById('scene');
                 this.initScene();
-                this.createJelly();
+                this.createOrb();
+                this.createParticles();
+                this.createFieldLines();
                 this.animate();
                 this.handleResize();
             }
@@ -134,43 +118,121 @@
                 this.renderer.setSize(window.innerWidth, window.innerHeight);
                 this.camera.position.z = 8;
 
-                const ambient = new THREE.AmbientLight(0xffffff, 0.5);
+                const ambient = new THREE.AmbientLight(0xffffff, 0.3);
                 this.scene.add(ambient);
                 
-                const directional = new THREE.DirectionalLight(0xffffff, 1);
+                const directional = new THREE.DirectionalLight(0xffffff, 0.8);
                 directional.position.set(5, 5, 5);
                 this.scene.add(directional);
             }
 
-            createJelly() {
-                this.geometry = new THREE.IcosahedronGeometry(2, 64);
-                this.originalPositions = this.geometry.attributes.position.array.slice();
-
-                this.material = new THREE.MeshPhongMaterial({
+            createOrb() {
+                // Metallic orb material
+                this.orbMaterial = new THREE.MeshPhysicalMaterial({
                     color: 0x9b59b6,
-                    shininess: 100,
-                    transparent: true,
-                    opacity: 0.6,
+                    metalness: 0.8,
+                    roughness: 0.3,
+                    clearcoat: 1.0,
+                    clearcoatRoughness: 0.2,
                     emissive: 0x00FFE0,
-                    emissiveIntensity: 0.2
+                    emissiveIntensity: 0.5
                 });
 
-                this.mesh = new THREE.Mesh(this.geometry, this.material);
-                this.scene.add(this.mesh);
+                this.geometry = new THREE.IcosahedronGeometry(1.5, 64);
+                this.orb = new THREE.Mesh(this.geometry, this.orbMaterial);
+                this.scene.add(this.orb);
+            }
+
+            createParticles() {
+                const particles = 500;
+                const positions = new Float32Array(particles * 3);
+                const colors = new Float32Array(particles * 3);
+                
+                for (let i = 0; i < particles; i++) {
+                    positions[i*3] = (Math.random() - 0.5) * 20;
+                    positions[i*3+1] = (Math.random() - 0.5) * 20;
+                    positions[i*3+2] = (Math.random() - 0.5) * 20;
+                    
+                    const color = new THREE.Color();
+                    color.setHSL(Math.random() * 0.3 + 0.5, 0.8, 0.6);
+                    colors[i*3] = color.r;
+                    colors[i*3+1] = color.g;
+                    colors[i*3+2] = color.b;
+                }
+
+                this.particleGeometry = new THREE.BufferGeometry();
+                this.particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                this.particleGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+                this.particleMaterial = new THREE.PointsMaterial({
+                    size: 0.15,
+                    vertexColors: true,
+                    transparent: true,
+                    opacity: 0.8
+                });
+
+                this.particleSystem = new THREE.Points(this.particleGeometry, this.particleMaterial);
+                this.scene.add(this.particleSystem);
+            }
+
+            createFieldLines() {
+                const lineCount = 12;
+                const points = [];
+                
+                for (let i = 0; i < lineCount; i++) {
+                    const angle = (i / lineCount) * Math.PI * 2;
+                    const radius = 3;
+                    
+                    for (let j = 0; j <= 30; j++) {
+                        const x = Math.cos(angle) * radius * (j/30);
+                        const y = Math.sin(angle) * radius * (j/30) + Math.sin(j * 0.3) * 0.5;
+                        const z = Math.sin(j * 0.3) * 0.5;
+                        points.push(new THREE.Vector3(x, y, z));
+                    }
+                }
+
+                const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                const material = new THREE.LineBasicMaterial({
+                    color: 0x00FFE0,
+                    transparent: true,
+                    opacity: 0.4
+                });
+                
+                this.fieldLines = new THREE.LineSegments(geometry, material);
+                this.scene.add(this.fieldLines);
             }
 
             animate() {
                 requestAnimationFrame(() => this.animate());
-                
                 const time = Date.now() * 0.001;
-                const positions = this.geometry.attributes.position.array;
+
+                // Orb rotation
+                this.orb.rotation.y += 0.002;
                 
-                for(let i = 0; i < positions.length; i += 3) {
-                    positions[i] = this.originalPositions[i] + Math.sin(time + i) * 0.1;
-                    positions[i + 1] = this.originalPositions[i + 1] + Math.cos(time + i) * 0.1;
+                // Particle animation
+                const positions = this.particleSystem.geometry.attributes.position.array;
+                for (let i = 0; i < positions.length; i += 3) {
+                    const dx = this.orb.position.x - positions[i];
+                    const dy = this.orb.position.y - positions[i+1];
+                    const dz = this.orb.position.z - positions[i+2];
+                    const distance = Math.sqrt(dx*dx + dy*dy + dz*dz);
+                    
+                    if (distance > 0.5) {
+                        positions[i] += dx * 0.003;
+                        positions[i+1] += dy * 0.003;
+                        positions[i+2] += dz * 0.003;
+                    } else {
+                        // Reset particle position
+                        positions[i] = (Math.random() - 0.5) * 20;
+                        positions[i+1] = (Math.random() - 0.5) * 20;
+                        positions[i+2] = (Math.random() - 0.5) * 20;
+                    }
                 }
-                this.geometry.attributes.position.needsUpdate = true;
-                this.mesh.rotation.y += 0.002;
+                this.particleSystem.geometry.attributes.position.needsUpdate = true;
+
+                // Field lines animation
+                this.fieldLines.rotation.y = time * 0.2;
+                this.fieldLines.material.opacity = Math.sin(time * 2) * 0.1 + 0.3;
 
                 this.renderer.render(this.scene, this.camera);
             }
@@ -184,7 +246,7 @@
             }
         }
 
-        window.addEventListener('load', () => new JellyScene());
+        window.addEventListener('load', () => new MagneticScene());
     </script>
 </body>
 </html>
