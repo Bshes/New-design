@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Magnetic Growth Orb</title>
+    <title>Magnetic Growth Orb v2</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Cormorant:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -84,10 +84,11 @@
     <section id="hero">
         <canvas id="scene"></canvas>
         <div class="hero-content">
-            <h1 class="headline">Magnetic Growth Orb</h1>
+            <h1 class="headline">Magnetic Growth Engine</h1>
             <p class="subheadline">
-                Attracting leads, customers, and profits effortlessly<br>
-                <span style="color: #00FFE0">Watch the magnetic effect in action →</span>
+                Attracting <span style="color: #FF6B6B">leads</span>, 
+                <span style="color: #00FFE0">customers</span>, and 
+                <span style="color: #FFD700">profits</span> effortlessly
             </p>
             <button class="cta-button">Activate Magnetic Growth</button>
         </div>
@@ -101,7 +102,7 @@
                 this.initScene();
                 this.createOrb();
                 this.createParticles();
-                this.createFieldLines();
+                this.createField();
                 this.animate();
                 this.handleResize();
             }
@@ -118,24 +119,23 @@
                 this.renderer.setSize(window.innerWidth, window.innerHeight);
                 this.camera.position.z = 8;
 
-                const ambient = new THREE.AmbientLight(0xffffff, 0.3);
+                const ambient = new THREE.AmbientLight(0xffffff, 0.5);
                 this.scene.add(ambient);
                 
-                const directional = new THREE.DirectionalLight(0xffffff, 0.8);
+                const directional = new THREE.DirectionalLight(0xffffff, 1);
                 directional.position.set(5, 5, 5);
                 this.scene.add(directional);
             }
 
             createOrb() {
-                // Metallic orb material
                 this.orbMaterial = new THREE.MeshPhysicalMaterial({
                     color: 0x9b59b6,
-                    metalness: 0.8,
-                    roughness: 0.3,
+                    metalness: 0.9,
+                    roughness: 0.1,
                     clearcoat: 1.0,
-                    clearcoatRoughness: 0.2,
+                    clearcoatRoughness: 0.1,
                     emissive: 0x00FFE0,
-                    emissiveIntensity: 0.5
+                    emissiveIntensity: 0.8
                 });
 
                 this.geometry = new THREE.IcosahedronGeometry(1.5, 64);
@@ -144,17 +144,20 @@
             }
 
             createParticles() {
-                const particles = 500;
-                const positions = new Float32Array(particles * 3);
-                const colors = new Float32Array(particles * 3);
+                const particleCount = 1000;
+                const positions = new Float32Array(particleCount * 3);
+                const colors = new Float32Array(particleCount * 3);
                 
-                for (let i = 0; i < particles; i++) {
+                for (let i = 0; i < particleCount; i++) {
+                    // Position
                     positions[i*3] = (Math.random() - 0.5) * 20;
                     positions[i*3+1] = (Math.random() - 0.5) * 20;
                     positions[i*3+2] = (Math.random() - 0.5) * 20;
                     
+                    // Colors
                     const color = new THREE.Color();
-                    color.setHSL(Math.random() * 0.3 + 0.5, 0.8, 0.6);
+                    const type = Math.floor(Math.random() * 3);
+                    color.setHex(type === 0 ? 0xFF6B6B : type === 1 ? 0x00FFE0 : 0xFFD700);
                     colors[i*3] = color.r;
                     colors[i*3+1] = color.g;
                     colors[i*3+2] = color.b;
@@ -165,74 +168,74 @@
                 this.particleGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
                 this.particleMaterial = new THREE.PointsMaterial({
-                    size: 0.15,
+                    size: 0.25,
                     vertexColors: true,
                     transparent: true,
-                    opacity: 0.8
+                    opacity: 0.9
                 });
 
-                this.particleSystem = new THREE.Points(this.particleGeometry, this.particleMaterial);
-                this.scene.add(this.particleSystem);
+                this.particles = new THREE.Points(this.particleGeometry, this.particleMaterial);
+                this.scene.add(this.particles);
             }
 
-            createFieldLines() {
-                const lineCount = 12;
-                const points = [];
-                
-                for (let i = 0; i < lineCount; i++) {
-                    const angle = (i / lineCount) * Math.PI * 2;
-                    const radius = 3;
-                    
-                    for (let j = 0; j <= 30; j++) {
-                        const x = Math.cos(angle) * radius * (j/30);
-                        const y = Math.sin(angle) * radius * (j/30) + Math.sin(j * 0.3) * 0.5;
-                        const z = Math.sin(j * 0.3) * 0.5;
-                        points.push(new THREE.Vector3(x, y, z));
-                    }
-                }
+            createField() {
+                const curve = new THREE.EllipseCurve(
+                    0, 0,
+                    3, 1.5,
+                    0, Math.PI * 2,
+                    false,
+                    0
+                );
 
+                const points = curve.getPoints(50);
                 const geometry = new THREE.BufferGeometry().setFromPoints(points);
-                const material = new THREE.LineBasicMaterial({
+                
+                this.fieldLine = new THREE.Line(geometry, new THREE.LineBasicMaterial({
                     color: 0x00FFE0,
                     transparent: true,
-                    opacity: 0.4
-                });
+                    opacity: 0.6
+                }));
                 
-                this.fieldLines = new THREE.LineSegments(geometry, material);
-                this.scene.add(this.fieldLines);
+                this.fieldLine.rotation.x = Math.PI/2;
+                this.scene.add(this.fieldLine);
             }
 
             animate() {
                 requestAnimationFrame(() => this.animate());
                 const time = Date.now() * 0.001;
-
+                
                 // Orb rotation
                 this.orb.rotation.y += 0.002;
                 
                 // Particle animation
-                const positions = this.particleSystem.geometry.attributes.position.array;
+                const positions = this.particles.geometry.attributes.position.array;
+                const colors = this.particles.geometry.attributes.color.array;
+                
                 for (let i = 0; i < positions.length; i += 3) {
                     const dx = this.orb.position.x - positions[i];
                     const dy = this.orb.position.y - positions[i+1];
                     const dz = this.orb.position.z - positions[i+2];
                     const distance = Math.sqrt(dx*dx + dy*dy + dz*dz);
                     
-                    if (distance > 0.5) {
-                        positions[i] += dx * 0.003;
-                        positions[i+1] += dy * 0.003;
-                        positions[i+2] += dz * 0.003;
-                    } else {
-                        // Reset particle position
+                    // Attraction force
+                    const force = 0.0005 * (1 / Math.pow(distance, 1.5));
+                    
+                    positions[i] += dx * force;
+                    positions[i+1] += dy * force;
+                    positions[i+2] += dz * force;
+
+                    // Reset when too close
+                    if (distance < 0.3) {
                         positions[i] = (Math.random() - 0.5) * 20;
                         positions[i+1] = (Math.random() - 0.5) * 20;
                         positions[i+2] = (Math.random() - 0.5) * 20;
                     }
                 }
-                this.particleSystem.geometry.attributes.position.needsUpdate = true;
+                this.particles.geometry.attributes.position.needsUpdate = true;
 
-                // Field lines animation
-                this.fieldLines.rotation.y = time * 0.2;
-                this.fieldLines.material.opacity = Math.sin(time * 2) * 0.1 + 0.3;
+                // Field animation
+                this.fieldLine.rotation.z = Math.sin(time) * 0.2;
+                this.fieldLine.material.opacity = Math.sin(time * 3) * 0.3 + 0.4;
 
                 this.renderer.render(this.scene, this.camera);
             }
