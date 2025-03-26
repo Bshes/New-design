@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Magnetic Growth Orb v2</title>
+    <title>Magnetic Growth Orb - Dark Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Cormorant:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --accent-magnet: #FF6B6B;
-            --field-teal: #00FFE0;
-            --dark-bg: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            --dark-bg: #0a0a0a;
+            --accent-teal: #00FFE0;
+            --text-glow: #15f4ee;
         }
 
         body {
@@ -49,24 +49,22 @@
             font-family: 'Cormorant', serif;
             font-size: 4rem;
             margin: 0 auto 2rem;
-            background: linear-gradient(45deg, var(--accent-magnet), var(--field-teal));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            line-height: 1.1;
+            color: var(--accent-teal);
+            text-shadow: 0 0 20px rgba(0,255,224,0.5);
         }
 
         .subheadline {
             font-size: 1.5rem;
             max-width: 600px;
             margin: 0 auto 3rem;
+            color: #999;
         }
 
         .cta-button {
             padding: 1.2rem 3rem;
             font-size: 1.2rem;
-            background: rgba(255, 107, 107, 0.15);
-            border: 2px solid var(--accent-magnet);
+            background: rgba(0, 255, 224, 0.1);
+            border: 2px solid var(--accent-teal);
             color: white;
             border-radius: 50px;
             cursor: pointer;
@@ -74,9 +72,9 @@
         }
 
         .cta-button:hover {
-            background: rgba(255, 107, 107, 0.3);
+            background: rgba(0, 255, 224, 0.2);
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(255,107,107,0.3);
+            box-shadow: 0 10px 30px rgba(0,255,224,0.3);
         }
     </style>
 </head>
@@ -84,25 +82,24 @@
     <section id="hero">
         <canvas id="scene"></canvas>
         <div class="hero-content">
-            <h1 class="headline">Magnetic Growth Engine</h1>
+            <h1 class="headline">Magnetic Results Engine</h1>
             <p class="subheadline">
-                Attracting <span style="color: #FF6B6B">leads</span>, 
-                <span style="color: #00FFE0">customers</span>, and 
-                <span style="color: #FFD700">profits</span> effortlessly
+                Attracting <span style="color: #FF6B6B">Leads</span>, 
+                <span style="color: #00FFE0">Customers</span>, and 
+                <span style="color: #FFD700">Profits</span> through focused growth
             </p>
             <button class="cta-button">Activate Magnetic Growth</button>
         </div>
     </section>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/FontLoader.js"></script>
     <script>
-        class MagneticScene {
+        class MagneticTextScene {
             constructor() {
                 this.container = document.getElementById('scene');
                 this.initScene();
-                this.createOrb();
-                this.createParticles();
-                this.createField();
+                this.loadFont();
                 this.animate();
                 this.handleResize();
             }
@@ -117,87 +114,75 @@
                     alpha: true
                 });
                 this.renderer.setSize(window.innerWidth, window.innerHeight);
+                this.renderer.setClearColor(0x000000, 0);
                 this.camera.position.z = 8;
 
-                const ambient = new THREE.AmbientLight(0xffffff, 0.5);
+                const ambient = new THREE.AmbientLight(0xffffff, 0.1);
                 this.scene.add(ambient);
                 
-                const directional = new THREE.DirectionalLight(0xffffff, 1);
+                const directional = new THREE.DirectionalLight(0xffffff, 0.3);
                 directional.position.set(5, 5, 5);
                 this.scene.add(directional);
             }
 
+            loadFont() {
+                const loader = new THREE.FontLoader();
+                loader.load('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/fonts/helvetiker_regular.typeface.json', 
+                    (font) => {
+                        this.font = font;
+                        this.createOrb();
+                        this.createTextParticles();
+                    });
+            }
+
             createOrb() {
-                this.orbMaterial = new THREE.MeshPhysicalMaterial({
-                    color: 0x9b59b6,
+                const geometry = new THREE.SphereGeometry(1.5, 64, 64);
+                const material = new THREE.MeshPhysicalMaterial({
+                    color: 0x1a1a1a,
                     metalness: 0.9,
                     roughness: 0.1,
                     clearcoat: 1.0,
                     clearcoatRoughness: 0.1,
-                    emissive: 0x00FFE0,
-                    emissiveIntensity: 0.8
+                    emissive: 0x002222,
+                    emissiveIntensity: 0.5
                 });
-
-                this.geometry = new THREE.IcosahedronGeometry(1.5, 64);
-                this.orb = new THREE.Mesh(this.geometry, this.orbMaterial);
+                this.orb = new THREE.Mesh(geometry, material);
                 this.scene.add(this.orb);
             }
 
-            createParticles() {
-                const particleCount = 1000;
-                const positions = new Float32Array(particleCount * 3);
-                const colors = new Float32Array(particleCount * 3);
+            createTextParticles() {
+                this.texts = [];
+                const words = ['Leads', 'Customers', 'Profits'];
+                const colors = ['#FF6B6B', '#00FFE0', '#FFD700'];
                 
-                for (let i = 0; i < particleCount; i++) {
-                    // Position
-                    positions[i*3] = (Math.random() - 0.5) * 20;
-                    positions[i*3+1] = (Math.random() - 0.5) * 20;
-                    positions[i*3+2] = (Math.random() - 0.5) * 20;
+                words.forEach((word, index) => {
+                    const textGeo = new THREE.TextGeometry(word, {
+                        font: this.font,
+                        size: 0.5,
+                        height: 0.1,
+                        curveSegments: 12
+                    });
                     
-                    // Colors
-                    const color = new THREE.Color();
-                    const type = Math.floor(Math.random() * 3);
-                    color.setHex(type === 0 ? 0xFF6B6B : type === 1 ? 0x00FFE0 : 0xFFD700);
-                    colors[i*3] = color.r;
-                    colors[i*3+1] = color.g;
-                    colors[i*3+2] = color.b;
-                }
-
-                this.particleGeometry = new THREE.BufferGeometry();
-                this.particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-                this.particleGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
-                this.particleMaterial = new THREE.PointsMaterial({
-                    size: 0.25,
-                    vertexColors: true,
-                    transparent: true,
-                    opacity: 0.9
+                    const material = new THREE.MeshBasicMaterial({
+                        color: colors[index],
+                        transparent: true,
+                        opacity: 0.7
+                    });
+                    
+                    const textMesh = new THREE.Mesh(textGeo, material);
+                    textMesh.position.set(
+                        (Math.random() - 0.5) * 20,
+                        (Math.random() - 0.5) * 20,
+                        (Math.random() - 0.5) * 20
+                    );
+                    textMesh.rotation.set(
+                        Math.random() * Math.PI,
+                        Math.random() * Math.PI,
+                        Math.random() * Math.PI
+                    );
+                    this.texts.push(textMesh);
+                    this.scene.add(textMesh);
                 });
-
-                this.particles = new THREE.Points(this.particleGeometry, this.particleMaterial);
-                this.scene.add(this.particles);
-            }
-
-            createField() {
-                const curve = new THREE.EllipseCurve(
-                    0, 0,
-                    3, 1.5,
-                    0, Math.PI * 2,
-                    false,
-                    0
-                );
-
-                const points = curve.getPoints(50);
-                const geometry = new THREE.BufferGeometry().setFromPoints(points);
-                
-                this.fieldLine = new THREE.Line(geometry, new THREE.LineBasicMaterial({
-                    color: 0x00FFE0,
-                    transparent: true,
-                    opacity: 0.6
-                }));
-                
-                this.fieldLine.rotation.x = Math.PI/2;
-                this.scene.add(this.fieldLine);
             }
 
             animate() {
@@ -205,38 +190,34 @@
                 const time = Date.now() * 0.001;
                 
                 // Orb rotation
-                this.orb.rotation.y += 0.002;
+                this.orb.rotation.y += 0.001;
                 
-                // Particle animation
-                const positions = this.particles.geometry.attributes.position.array;
-                const colors = this.particles.geometry.attributes.color.array;
-                
-                for (let i = 0; i < positions.length; i += 3) {
-                    const dx = this.orb.position.x - positions[i];
-                    const dy = this.orb.position.y - positions[i+1];
-                    const dz = this.orb.position.z - positions[i+2];
+                // Text animation
+                this.texts.forEach(text => {
+                    const dx = this.orb.position.x - text.position.x;
+                    const dy = this.orb.position.y - text.position.y;
+                    const dz = this.orb.position.z - text.position.z;
                     const distance = Math.sqrt(dx*dx + dy*dy + dz*dz);
                     
-                    // Attraction force
-                    const force = 0.0005 * (1 / Math.pow(distance, 1.5));
+                    const attraction = 0.0005 / (distance + 0.1);
                     
-                    positions[i] += dx * force;
-                    positions[i+1] += dy * force;
-                    positions[i+2] += dz * force;
-
+                    text.position.x += dx * attraction;
+                    text.position.y += dy * attraction;
+                    text.position.z += dz * attraction;
+                    
                     // Reset when too close
-                    if (distance < 0.3) {
-                        positions[i] = (Math.random() - 0.5) * 20;
-                        positions[i+1] = (Math.random() - 0.5) * 20;
-                        positions[i+2] = (Math.random() - 0.5) * 20;
+                    if (distance < 1.0) {
+                        text.position.set(
+                            (Math.random() - 0.5) * 20,
+                            (Math.random() - 0.5) * 20,
+                            (Math.random() - 0.5) * 20
+                        );
                     }
-                }
-                this.particles.geometry.attributes.position.needsUpdate = true;
-
-                // Field animation
-                this.fieldLine.rotation.z = Math.sin(time) * 0.2;
-                this.fieldLine.material.opacity = Math.sin(time * 3) * 0.3 + 0.4;
-
+                    
+                    // Rotation
+                    text.rotation.y = Math.sin(time + text.position.x) * 0.2;
+                });
+                
                 this.renderer.render(this.scene, this.camera);
             }
 
@@ -249,7 +230,7 @@
             }
         }
 
-        window.addEventListener('load', () => new MagneticScene());
+        window.addEventListener('load', () => new MagneticTextScene());
     </script>
 </body>
 </html>
